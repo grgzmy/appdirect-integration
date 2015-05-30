@@ -1,0 +1,75 @@
+New log file opened at Sat May 30 15:22:52 EDT 2015 by 30805@Georges-MacBook-Pro.local
+Taking next connection to: 51023
+New client attempting to connect on port: 51024-51023
+  Address = /192.168.2.13:51023
+This client on port 51024 has uuid ede4f4c3-195b-4f5a-8197-b2051cfb5624 configName activator humanReadableName Activator protocolVersion 1 featureTags Vector()
+Connected Clients: activator-ede4f4c3-195b-4f5a-8197-b2051cfb5624
+Taking next connection to: 51023
+New client attempting to connect on port: 51108-51023
+  Address = /192.168.2.13:51023
+Handshake exception on socket: 51108
+sbt.impl.ipc.HandshakeException: Unable to perform handshake
+	at sbt.impl.ipc.Peer.handshake(IPC.scala:46)
+	at sbt.impl.ipc.MultiClientServer.<init>(IPC.scala:150)
+	at sbt.server.SbtServerSocketHandler$$anon$1.run(SbtServerSocketHandler.scala:43)
+Caused by: java.net.SocketException: Connection reset
+	at java.net.SocketInputStream.read(SocketInputStream.java:209)
+	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+	at java.io.BufferedInputStream.fill(BufferedInputStream.java:246)
+	at java.io.BufferedInputStream.read(BufferedInputStream.java:265)
+	at java.io.DataInputStream.readInt(DataInputStream.java:387)
+	at sbt.impl.ipc.Peer.receive(IPC.scala:95)
+	at sbt.impl.ipc.Peer.handshake(IPC.scala:49)
+	... 2 more
+Taking next connection to: 51023
+New client attempting to connect on port: 51109-51023
+  Address = /192.168.2.13:51023
+This client on port 51109 has uuid 77ada752-07b1-4633-a9f2-3a748aae1451 configName play-fork-run humanReadableName Play Fork Run protocolVersion 1 featureTags Vector()
+Connected Clients: activator-ede4f4c3-195b-4f5a-8197-b2051cfb5624, play-fork-run-77ada752-07b1-4633-a9f2-3a748aae1451
+Taking next connection to: 51023
+Checking to see if clients are empty...
+We have 1 non-daemon clients, continuing serving connections.
+Taking next connection to: 51023
+New client attempting to connect on port: 51133-51023
+  Address = /192.168.2.13:51023
+Handshake exception on socket: 51133
+sbt.impl.ipc.HandshakeException: Unable to perform handshake
+	at sbt.impl.ipc.Peer.handshake(IPC.scala:46)
+	at sbt.impl.ipc.MultiClientServer.<init>(IPC.scala:150)
+	at sbt.server.SbtServerSocketHandler$$anon$1.run(SbtServerSocketHandler.scala:43)
+Caused by: java.net.SocketException: Connection reset
+	at java.net.SocketInputStream.read(SocketInputStream.java:209)
+	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+	at java.io.BufferedInputStream.fill(BufferedInputStream.java:246)
+	at java.io.BufferedInputStream.read(BufferedInputStream.java:265)
+	at java.io.DataInputStream.readInt(DataInputStream.java:387)
+	at sbt.impl.ipc.Peer.receive(IPC.scala:95)
+	at sbt.impl.ipc.Peer.handshake(IPC.scala:49)
+	... 2 more
+Taking next connection to: 51023
+New client attempting to connect on port: 51134-51023
+  Address = /192.168.2.13:51023
+This client on port 51134 has uuid 7c806570-4dd3-4c32-893f-a3cfaed9c795 configName play-fork-run humanReadableName Play Fork Run protocolVersion 1 featureTags Vector()
+Connected Clients: activator-ede4f4c3-195b-4f5a-8197-b2051cfb5624, play-fork-run-7c806570-4dd3-4c32-893f-a3cfaed9c795
+Taking next connection to: 51023
+Checking to see if clients are empty...
+We have 1 non-daemon clients, continuing serving connections.
+Taking next connection to: 51023
+Checking to see if clients are empty...
+We have 1 non-daemon clients, continuing serving connections.
+Taking next connection to: 51023
+Checking to see if clients are empty...
+We have 1 non-daemon clients, continuing serving connections.
+Taking next connection to: 51023
+Checking to see if clients are empty...
+We have 1 non-daemon clients, continuing serving connections.
+Taking next connection to: 51023
+Checking to see if clients are empty...
+We have 1 non-daemon clients, continuing serving connections.
+Taking next connection to: 51023
+Checking to see if clients are empty...
+We have 1 non-daemon clients, continuing serving connections.
+Taking next connection to: 51023
+Checking to see if clients are empty...
+We have 1 non-daemon clients, continuing serving connections.
+Taking next connection to: 51023
