@@ -1,5 +1,7 @@
 package grgzmy.appdirect
 
+import oauth.signpost.OAuthConsumer
+import oauth.signpost.basic.DefaultOAuthConsumer
 import play.api.Play._
 import play.api.libs.oauth.ConsumerKey
 
@@ -15,7 +17,14 @@ object Security {
     } yield ConsumerKey(key, secret)
   val AUTH_HEADER = "Authorization"
 
+  val javaConsumer: Option[OAuthConsumer] =
+    for{
+      key <- $("security.oauth.key")
+      secret <- $("security.oauth.secret")
+    } yield new DefaultOAuthConsumer(key, secret)
 
 
 
- }
+
+
+}
