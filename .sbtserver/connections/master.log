@@ -1,137 +1,40 @@
-New log file opened at Sat May 30 17:29:19 EDT 2015 by 31573@Georges-MacBook-Pro.local
-Taking next connection to: 52224
-New client attempting to connect on port: 52225-52224
-  Address = /192.168.2.13:52224
-This client on port 52225 has uuid 65df0591-22c1-4889-be4b-14c1c37bf31d configName activator humanReadableName Activator protocolVersion 1 featureTags Vector()
-Connected Clients: activator-65df0591-22c1-4889-be4b-14c1c37bf31d
-Taking next connection to: 52224
+New log file opened at Mon Jun 01 21:28:55 EDT 2015 by 34735@Georges-MacBook-Pro.local
+Taking next connection to: 60017
+New client attempting to connect on port: 60018-60017
+  Address = /192.168.2.13:60017
+This client on port 60018 has uuid 8eae3b03-6d9a-4270-9c0b-d1f57c395bd0 configName activator humanReadableName Activator protocolVersion 1 featureTags Vector()
+Connected Clients: activator-8eae3b03-6d9a-4270-9c0b-d1f57c395bd0
+Taking next connection to: 60017
 Checking to see if clients are empty...
 We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
+Taking next connection to: 60017
 Checking to see if clients are empty...
 We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
+Taking next connection to: 60017
 Checking to see if clients are empty...
 We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
+Taking next connection to: 60017
 Checking to see if clients are empty...
 We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
+Taking next connection to: 60017
 Checking to see if clients are empty...
 We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
+Taking next connection to: 60017
 Checking to see if clients are empty...
 We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
+Taking next connection to: 60017
 Checking to see if clients are empty...
 We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
+Taking next connection to: 60017
 Checking to see if clients are empty...
 We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
+Taking next connection to: 60017
 Checking to see if clients are empty...
 We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-New client attempting to connect on port: 53078-52224
-  Address = /192.168.2.13:52224
-Handshake exception on socket: 53078
-sbt.impl.ipc.HandshakeException: Unable to perform handshake
-	at sbt.impl.ipc.Peer.handshake(IPC.scala:46)
-	at sbt.impl.ipc.MultiClientServer.<init>(IPC.scala:150)
-	at sbt.server.SbtServerSocketHandler$$anon$1.run(SbtServerSocketHandler.scala:43)
-Caused by: java.io.EOFException
-	at java.io.DataInputStream.readInt(DataInputStream.java:392)
-	at sbt.impl.ipc.Peer.receive(IPC.scala:95)
-	at sbt.impl.ipc.Peer.handshake(IPC.scala:49)
-	... 2 more
-Taking next connection to: 52224
-New client attempting to connect on port: 53079-52224
-  Address = /192.168.2.13:52224
-This client on port 53079 has uuid 08842df4-e230-4bc9-a991-e33717c9033d configName play-fork-run humanReadableName Play Fork Run protocolVersion 1 featureTags Vector()
-Connected Clients: activator-65df0591-22c1-4889-be4b-14c1c37bf31d, play-fork-run-08842df4-e230-4bc9-a991-e33717c9033d
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
-Checking to see if clients are empty...
-We have 1 non-daemon clients, continuing serving connections.
-Taking next connection to: 52224
+Taking next connection to: 60017
 Checking to see if clients are empty...
 No non-daemon clients connected after 3 min. Shutting down.
-1 daemon clients are connected.
 Server socket thread exiting.
-1 clients open, will close them...
+0 clients open, will close them...
 All client sockets have been closed.
-Closing the 31573@Georges-MacBook-Pro.local logs at Sat May 30 19:20:22 EDT 2015, goodbye.
+Closing the 34735@Georges-MacBook-Pro.local logs at Mon Jun 01 22:01:42 EDT 2015, goodbye.

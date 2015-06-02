@@ -10,6 +10,7 @@ import play.api.Play.current
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import grgzmy.appdirect.Security
+import oauth.signpost.OAuthConsumer
 
 class SubscriptionCtrl extends Controller {
 
@@ -17,16 +18,17 @@ class SubscriptionCtrl extends Controller {
     val accessTokenOpt: Option[String] = request.headers.get("Authorization")
     (accessTokenOpt, Security.consumer) match {
       case (Some(accessToken), Some(consumer)) => {
-        val expected = WS.url(s"http://${request.host}${request.uri}").sign(OAuthCalculator(consumer, RequestToken("", "")))
-        (expected.headers.get(Security.AUTH_HEADER), (request.headers.get(Security.AUTH_HEADER))) match {
-          case (Some(exp), Some(actual)) if exp == actual =>
-            Logger.info("verified request - receobed auth token is expected")
+        val calculator = new OAuthCalculator(consumer, RequestToken("", ""))
+        val expected = WS.url(s"http://${request.host}${request.uri}").sign(calculator)
+        expected.headers.get(Security.AUTH_HEADER)match {
+          case Some(exp) if exp.contains(accessToken) =>
+            Logger.info("verified request - received auth token is expected")
             Right(Unit)
-          case (Some(exp), Some(actual)) =>
-            Logger.info(s"oauth token mismatch. expected $exp, but got $actual")
+          case Some(exp) =>
+            Logger.info(s"oauth token mismatch. expected $exp, but got $accessToken")
             Left(Future.successful(Unauthorized("Cannot verify auth tokens")))
-          case (e, a) =>
-            Logger.info(s"some auth tokens missing expected $e but got $a")
+          case e =>
+            Logger.info(s"some auth tokens missing expected $e but got $accessToken")
             Left(Future.successful(Unauthorized("Cannot verify auth tokens")))
         }
       }
@@ -38,7 +40,7 @@ class SubscriptionCtrl extends Controller {
   private def processAppDirectEvent(fetchUrl: String)(implicit request: Request[AnyContent]) = {
     Logger.info(s"fetching event from url $fetchUrl")
     WS.url(fetchUrl).sign(OAuthCalculator(Security.consumer.get, RequestToken("", ""))).get().map{
-      r => Logger.info(r.toString)
+      r => Logger.info(s"recieved response for the vent :${r.toString}")
     }
 
   }
@@ -46,12 +48,13 @@ class SubscriptionCtrl extends Controller {
   def order(fetchUrl: String) = Action.async{
     implicit request =>
       Logger.info(s"recieved order request from AppDirect: ${request.toString}")
-      verify match{
-        case Left(r: Future[Result]) => r
-        case Right(_) =>
-          Future(processAppDirectEvent(fetchUrl))
-          Future.successful(Ok)
-      }
+      Future(processAppDirectEvent(fetchUrl))
+      Future.successful(Ok)
+
+    //      verify match{
+    //        case Left(r: Future[Result]) => r
+    //        case Right(_) =>
+//      }
 
   }
 
