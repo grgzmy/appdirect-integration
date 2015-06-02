@@ -19,8 +19,15 @@ class SubscriptionCtrl extends Controller {
       case (Some(accessToken), Some(consumer)) => {
         val expected = WS.url(s"http://${request.host}${request.uri}").sign(OAuthCalculator(consumer, RequestToken("", "")))
         (expected.headers.get(Security.AUTH_HEADER), (request.headers.get(Security.AUTH_HEADER))) match {
-          case (Some(exp), Some(actual)) if exp == actual => Right(Unit)
-          case _ => Left(Future.successful(Unauthorized("Cannot verify auth tokens")))
+          case (Some(exp), Some(actual)) if exp == actual =>
+            Logger.info("verified request - receobed auth token is expected")
+            Right(Unit)
+          case (Some(exp), Some(actual)) =>
+            Logger.info(s"oauth token mismatch. expected $exp, but got $actual")
+            Left(Future.successful(Unauthorized("Cannot verify auth tokens")))
+          case (e, a) =>
+            Logger.info(s"some auth tokens missing expected $e but got $a")
+            Left(Future.successful(Unauthorized("Cannot verify auth tokens")))
         }
       }
       case (None, Some(c)) => Left(Future.successful(BadRequest("Missing OAuth headers!")))
@@ -29,6 +36,7 @@ class SubscriptionCtrl extends Controller {
   }
 
   private def processAppDirectEvent(fetchUrl: String)(implicit request: Request[AnyContent]) = {
+    Logger.info(s"fetching event from url $fetchUrl")
     WS.url(fetchUrl).sign(OAuthCalculator(Security.consumer.get, RequestToken("", ""))).get().map{
       r => Logger.info(r.toString)
     }
@@ -37,6 +45,7 @@ class SubscriptionCtrl extends Controller {
 
   def order(fetchUrl: String) = Action.async{
     implicit request =>
+      Logger.info(s"recieved order request from AppDirect: ${request.toString}")
       verify match{
         case Left(r: Future[Result]) => r
         case Right(_) =>
