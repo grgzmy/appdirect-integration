@@ -40,7 +40,10 @@ class SubscriptionCtrl extends Controller {
   private def processAppDirectEvent(fetchUrl: String)(implicit request: Request[AnyContent]) = {
     Logger.info(s"fetching event from url $fetchUrl")
     WS.url(fetchUrl).sign(OAuthCalculator(Security.consumer.get, RequestToken("", ""))).get().map{
-      r => Logger.info(s"recieved response for the vent :${r.toString}")
+      r => {
+        Logger.info(s"recieved response for the event :${r.xml.toString}")
+        r
+      }
     }
 
   }
@@ -48,8 +51,18 @@ class SubscriptionCtrl extends Controller {
   def order(fetchUrl: String) = Action.async{
     implicit request =>
       Logger.info(s"recieved order request from AppDirect: ${request.toString}")
-      Future(processAppDirectEvent(fetchUrl))
-      Future.successful(Ok)
+      processAppDirectEvent(fetchUrl).map{
+        r =>
+          val resp =
+            <result>
+              <success>true</success>
+              <message>Account creation successful</message>
+              <accountIdentifier>new-account-identifier</accountIdentifier>
+            </result>
+          Logger.info(s"replying back with dummy sucess ${resp.toString}")
+          Ok(resp)
+      }
+
 
     //      verify match{
     //        case Left(r: Future[Result]) => r
