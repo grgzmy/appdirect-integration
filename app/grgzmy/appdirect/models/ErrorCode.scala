@@ -1,0 +1,15 @@
+package grgzmy.appdirect.models
+
+object ErrorCode extends SaferEnum{
+  val USER_ALREADY_EXISTS = Value("USER_ALREADY_EXISTS")
+  val ACCOUNT_NOT_FOUND = Value("ACCOUNT_NOT_FOUND")
+  val MAX_USERS_REACHED = Value("MAX_USERS_REACHED")
+  val USER_NOT_FOUND = Value("USER_NOT_FOUND")
+  val UNAUTHORIZED = Value("UNAUTHORIZED")
+  val OPERATION_CANCELED = Value("OPERATION_CANCELED")
+  val CONFIGURATION_ERROR = Value("CONFIGURATION_ERROR")
+  val INVALID_RESPONSE = Value("INVALID_RESPONSE")
+  val UNKNOWN_ERROR = Value("UNKNOWN_ERROR")
+  val PENDING = Value("PENDING")
+
+}
