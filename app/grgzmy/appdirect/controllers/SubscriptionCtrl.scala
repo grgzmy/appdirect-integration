@@ -7,7 +7,7 @@ import play.api.Logger
 import play.api.Play.current
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import grgzmy.appdirect.Security
+import grgzmy.appdirect.{models, Security}
 import grgzmy.appdirect.models._
 import grgzmy.appdirect.models.{SuccessResponse, FailureResponse}
 import scala.xml.NodeSeq
@@ -127,20 +127,23 @@ class SubscriptionCtrl extends Controller {
     }
   }
 
+  private def unkownEvent(event: Event, xml: NodeSeq): Future[Response] = Future.successful(FailureResponse("Unknown Event", ErrorCode.INVALID_RESPONSE))
+
+  val actions: Map[EventType.Value, (Event, NodeSeq)=>Future[Response]] = Map(
+    EventType.SUBSCRIPTION_ORDER -> order,
+    EventType.SUBSCRIPTION_CHANGE -> change,
+    EventType.SUBSCRIPTION_NOTICE -> notice,
+    EventType.SUBSCRIPTION_CANCEL -> cancel,
+    EventType.UNKNOWN ->  unkownEvent
+  )
+
   def event(fetchUrl: String) = Action.async{
     implicit request =>
       Logger.info(s"recieved order request from AppDirect: ${request.toString()}")
-      fetchEvent("https://www.appdirect.com/api/integration/v1/events/dummyNotice").flatMap(resp =>
+      fetchEvent(fetchUrl).flatMap(resp =>
         {
           val e = Event.from(resp.xml)
-          val response: Future[Response] = e.typ match {
-            case EventType.SUBSCRIPTION_ORDER => order(e, resp.xml)
-            case EventType.SUBSCRIPTION_CHANGE => change(e, resp.xml)
-            case EventType.SUBSCRIPTION_NOTICE => notice(e, resp.xml)
-            case EventType.SUBSCRIPTION_CANCEL => cancel(e, resp.xml)
-            case _ => Future.successful(FailureResponse("Unknown Event", ErrorCode.INVALID_RESPONSE))
-          }
-          response.map(r => {
+          actions(e.typ)(e, resp.xml).map(r => {
             Logger.info(s"sending back: ${r.toXml.toString}")
             Ok(r.toXml)})
         }
