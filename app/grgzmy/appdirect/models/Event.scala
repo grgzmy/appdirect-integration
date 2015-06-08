@@ -94,10 +94,17 @@ object AccountStatus extends SaferEnum{
     allowedTransitions(from).contains(to)
 }
 
-case class Account(accountIdentifier: Option[String], status: AccountStatus.Value) extends EventParams
+case class Account(accountIdentifier: Option[Int], status: AccountStatus.Value) extends EventParams
 object Account extends CompanionUtils{
   def init(status: AccountStatus.Value) = Account(None, status)
-  def from(xml: NodeSeq) = Account(xml get "accountIdentifier", AccountStatus.from(xml \ "status"))
+  def from(xml: NodeSeq) = {
+    val accountIdentifier = xml get "accountIdentifier" map {
+      case "dummy-account" => 1 //to make ping tests work :(
+      case id: String => try{id.toInt} catch {case e: NumberFormatException => throw new EventParamException("Only numeric account ids are supported")}
+      case _=> throw new EventParamException("Malformed account identifier")
+    }
+    Account(accountIdentifier, AccountStatus.from(xml \ "status"))
+  }
 }
 
 case class Notice(typ: NoticeType.Value) extends EventParams

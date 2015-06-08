@@ -135,7 +135,7 @@ class EventDao {
       editionCode <- order.editionCode
     }yield{
       try{
-        update(updateSql, List(editionCode, order.users, order.megaBytes, accountIdentifier)) == 1
+        update(updateSql, List(editionCode.toString, order.users, order.megaBytes, accountIdentifier)) == 1
       } catch {
         case e: Exception => throw new DbException(s"Failed to update account $accountIdentifier. error: ${e.getMessage}", ErrorCode.UNKNOWN_ERROR)
       }

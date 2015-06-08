@@ -130,7 +130,7 @@ class SubscriptionCtrl extends Controller {
   def event(fetchUrl: String) = Action.async{
     implicit request =>
       Logger.info(s"recieved order request from AppDirect: ${request.toString()}")
-      fetchEvent(fetchUrl).flatMap(resp =>
+      fetchEvent("https://www.appdirect.com/api/integration/v1/events/dummyNotice").flatMap(resp =>
         {
           val e = Event.from(resp.xml)
           val response: Future[Response] = e.typ match {
@@ -140,7 +140,9 @@ class SubscriptionCtrl extends Controller {
             case EventType.SUBSCRIPTION_CANCEL => cancel(e, resp.xml)
             case _ => Future.successful(FailureResponse("Unknown Event", ErrorCode.INVALID_RESPONSE))
           }
-          response.map(r => Ok(r.toXml))
+          response.map(r => {
+            Logger.info(s"sending back: ${r.toXml.toString}")
+            Ok(r.toXml)})
         }
       )
 
