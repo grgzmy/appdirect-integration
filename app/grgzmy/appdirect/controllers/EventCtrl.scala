@@ -103,7 +103,6 @@ class EventCtrl extends Controller {
         FailureResponse(e.getMessage, e.err)
       case e: Exception =>
         e.printStackTrace()
-        println(s"culprit event: $e")
         FailureResponse(e.getMessage, ErrorCode.UNKNOWN_ERROR)
     }
 

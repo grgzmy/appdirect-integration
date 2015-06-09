@@ -210,7 +210,6 @@ object EventDao {
         case e: Exception => throw new DbException(s"Failed to add user", ErrorCode.UNKNOWN_ERROR)
       }
     }).orElse{
-      println(s"event didnt have everything $event")
       Option(())
     }
   }
