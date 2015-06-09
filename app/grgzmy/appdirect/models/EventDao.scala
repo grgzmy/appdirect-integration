@@ -18,7 +18,8 @@ class EventDao {
 
   val conn: Connection = db.getConnection
 
-
+  val GENERATE_RETURNED_ID = true
+  val DONT_GENERATE_RETURNED_ID = false
 
   private def auditEvent(xml: NodeSeq) = {
     val eventSql = "INSERT INTO EVENTS(PAYLOAD) VALUES(?)"
@@ -35,6 +36,7 @@ class EventDao {
           val clob = conn.createClob()
           clob.setString(1, data.toString())
           ps.setClob(i+1, clob)
+        case null => ps.setNull(i+1, 0)
         case data => throw new DbException(s"unsopported data : $data")
       }
     }
@@ -45,8 +47,8 @@ class EventDao {
     ps.executeUpdate()
   }
 
-  private def insert(sql: String, inputs: List[Any]): PreparedStatement = {
-    val ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+  private def insert(sql: String, inputs: List[Any], returnGeneratedID: Boolean): PreparedStatement = {
+    val ps = if(returnGeneratedID) conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) else conn.prepareStatement(sql)
     enrichPreparedStatements(ps, inputs)
     try{ps.executeUpdate()} catch{
       case e: JdbcSQLException if e.getMessage.contains("CONSTRAINT_INDEX") => ()
@@ -58,7 +60,7 @@ class EventDao {
 
 
   private def insertAndRetrunId(sql: String, inputs: List[Any]): Long = {
-    val ps =  insert(sql, inputs)
+    val ps =  insert(sql, inputs, GENERATE_RETURNED_ID)
     Option(ps.getGeneratedKeys).map{
       case rs if rs.next =>
         rs.getLong(1)
@@ -70,8 +72,8 @@ class EventDao {
 
   private def insertUnique(sql: String, inputs: List[Any]): Unit = {
     try{
-      insert(sql, inputs)}catch {
-      case e: Exception => throw new DbException(s"Database Error saving company info: ${e.getMessage}, sql: $sql, ", ErrorCode.UNKNOWN_ERROR)
+      insert(sql, inputs, DONT_GENERATE_RETURNED_ID)}catch {
+      case e: Exception => throw new DbException(s"Database Error saving company info", ErrorCode.UNKNOWN_ERROR)
     }
   }
 
@@ -116,8 +118,7 @@ class EventDao {
         try{
           insertAndRetrunId(stmt, List(marketPlace, creatorId, payload.company.flatMap(_.name).orNull, account.status.toString, order.users, order.megaBytes, editionCode.toString))
         } catch{
-          case e: DbException =>
-            throw new DbException(s"Database commit failed: ${e.getMessage}", e.err)
+          case e: DbException => throw e
           case e: Exception =>
             throw new Exception(e)
         }
@@ -137,7 +138,7 @@ class EventDao {
       try{
         update(updateSql, List(editionCode.toString, order.users, order.megaBytes, accountIdentifier)) == 1
       } catch {
-        case e: Exception => throw new DbException(s"Failed to update account $accountIdentifier. error: ${e.getMessage}", ErrorCode.UNKNOWN_ERROR)
+        case e: Exception => throw new DbException(s"Failed to update account $accountIdentifier.", ErrorCode.UNKNOWN_ERROR)
       }
     }).getOrElse{
       throw new EventParamException("Missing Payload data")
@@ -159,7 +160,7 @@ class EventDao {
         try{
           update(sql, List(status.toString, accountIdentifier)) == 1
         }catch {
-          case e: Exception => throw new DbException(s"Failed to set status of  account $accountIdentifier to ${status.toString}. error: ${e.getMessage}", ErrorCode.UNKNOWN_ERROR)
+          case e: Exception => throw new DbException(s"Failed to set status of  account $accountIdentifier to ${status.toString}", ErrorCode.UNKNOWN_ERROR)
         }
       }).getOrElse{
       throw new EventParamException("Missing Payload data")
@@ -182,6 +183,62 @@ class EventDao {
         case _ => throw new EventParamException("Invalid notice")
       }
     }).getOrElse{
+      throw new EventParamException("Missing Payload data")
+    }
+  }
+
+  def assignUser(event: Event, xml: NodeSeq): Unit = {
+    auditEvent(xml)
+    val sql = "INSERT INTO USER VALUES(?,?,?,?)"
+    for{
+      payload <-event.payload
+      user <- payload.user
+      email <- user.email
+      first <- user.firstName
+      last <- user.lastName
+      openID <- user.openId
+    }yield{
+      try{
+        require(!checkIfUserExists(user).contains(true), throw new DbException("User already exists", ErrorCode.USER_ALREADY_EXISTS))
+        insertUnique(sql, List(openID, first, last, email.address))
+      }catch{
+        case e: DbException => throw e
+        case e: Exception => throw new DbException(s"Failed to add user", ErrorCode.UNKNOWN_ERROR)
+      }
+    }
+  }
+
+  private def checkIfUserExists(user: User): Option[Boolean] = {
+    val sql =  "SELECT * FROM USER WHERE OPENID=? AND EMAIL=? AND FIRST_NAME=? AND LAST_NAME=?"
+    for{
+      email <- user.email
+      first <- user.firstName
+      last <- user.lastName
+      openID <- user.openId
+    }yield{
+      val ps = conn.prepareStatement(sql)
+      enrichPreparedStatements(ps, List(openID, email.address, first, last))
+      val rsOpt = Option(ps.executeQuery())
+      rsOpt.exists(_.next)
+    }
+  }
+
+  def unassignUser(event: Event, xml: NodeSeq): Boolean = {
+    val sql = "DELETE FROM USER WHERE OPENID=? AND EMAIL=? AND FIRST_NAME=? AND LAST_NAME=?"
+    (for{
+      payload <-event.payload
+      user <- payload.user
+      email <- user.email
+      first <- user.firstName
+      last <- user.lastName
+      openID <- user.openId
+    }yield{
+        try{
+          update(sql, List(openID, email.address, first, last)) == 1
+        }catch {
+          case e: Exception => throw new DbException(s"Failed to delete user", ErrorCode.UNKNOWN_ERROR)
+        }
+      }).getOrElse{
       throw new EventParamException("Missing Payload data")
     }
   }
