@@ -1,6 +1,6 @@
 package grgzmy.appdirect.models
 
-import java.sql.{PreparedStatement, Connection, Statement}
+import java.sql.{ResultSet, PreparedStatement, Connection, Statement}
 import org.h2.jdbc.JdbcSQLException
 import org.h2.tools.Server
 import play.api.db._
@@ -11,7 +11,7 @@ import NoticeType._, AccountStatus._
 
 class DbException(msg: String, val err: ErrorCode.Value = ErrorCode.UNKNOWN_ERROR) extends Exception(msg)
 
-class EventDao {
+object EventDao {
   val server = Server.createTcpServer()
 
   val db = DB.getDataSource()
@@ -250,7 +250,25 @@ class EventDao {
     }
   }
 
-  def getSubscriptions(): List[Subscription]
-
+  def getSubscriptions: Set[Subscription] = {
+    def mapRow(rs: ResultSet, subs: Set[Subscription]): Set[Subscription] = {
+      val newSub =
+        Subscription(
+          rs.getInt("ACCOUNT_IDENTIFIER"),
+          Option(rs.getString("MARKETPLACE").trim),
+          Option(rs.getString("CREATOR").trim),
+          Option(EditionCode.from(rs.getString("EDITION_CODE").trim)),
+          Option(rs.getString("COMPANY").trim),
+          Option(AccountStatus.from(rs.getString("STATUS").trim)),
+          Option(rs.getInt("NUM_USERS")),
+          Option(rs.getInt("NUM_MEGABYTES"))
+        )
+      if(rs.next) mapRow(rs, subs + newSub) else subs+newSub
+    }
+    val sql = "SELECT * FROM SUBSCRIPTIONS"
+    val ps = conn.prepareStatement(sql)
+    val rs = Option(ps.executeQuery)
+    rs.map(r => if(r.next) mapRow(r, Set[Subscription]().empty) else Set[Subscription]().empty).getOrElse(Set[Subscription]().empty)
+  }
 
 }

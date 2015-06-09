@@ -176,12 +176,4 @@ object Event extends CompanionUtils{
 
 }
 
-case class Subscription(accountId: Int,
-                        marketPlace: Option[String],
-                        creator: Option[String],
-                        company: Option[String],
-                        status: Option[String],
-                        edition: Option[EditionCode.Value],
-                        users: Option[String],
-                        megabytes: Option[String])
 
