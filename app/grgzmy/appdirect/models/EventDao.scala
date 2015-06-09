@@ -250,5 +250,7 @@ class EventDao {
     }
   }
 
+  def getSubscriptions(): List[Subscription]
+
 
 }
