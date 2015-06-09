@@ -10,6 +10,6 @@ GET     /assets/*file                                   controllers.Assets.versi
 
 
 #AppDirect Event Listeners
-GET     /appdirect/event/:fetchUrl       grgzmy.appdirect.controllers.SubscriptionCtrl.event(fetchUrl: String)
+GET     /appdirect/event/:fetchUrl       grgzmy.appdirect.controllers.EventCtrl.event(fetchUrl: String)
 #GET /test   grgzmy.appdirect.controllers.SubscriptionCtrl.test
 #GET /test2   grgzmy.appdirect.controllers.SubscriptionCtrl.test2

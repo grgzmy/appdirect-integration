@@ -12,16 +12,17 @@ import grgzmy.appdirect.models._
 import grgzmy.appdirect.models.{SuccessResponse, FailureResponse}
 import scala.xml.NodeSeq
 
-class SubscriptionCtrl extends Controller {
+class EventCtrl extends Controller {
 
   val eventDao: EventDao = new EventDao
 
   def event(fetchUrl: String) = Action.async{
     implicit request =>
       Logger.info(s"received order request from AppDirect: ${request.toString()}")
-      fetchEvent(fetchUrl).flatMap(resp =>
+      fetchEvent("https://www.appdirect.com/api/integration/v1/events/dummyAssign").flatMap(resp =>
       {
-        val e = Event.from(resp.xml)
+        val t = <event xmlns:atom="http://www.w3.org/2005/Atom"><type>USER_ASSIGNMENT</type><marketplace><baseUrl>https://acme.appdirect.com</baseUrl><partner>ACME</partner></marketplace><flag>STATELESS</flag><creator><email>test-email+creator@appdirect.com</email><firstName>DummyCreatorFirst</firstName><language>fr</language><lastName>DummyCreatorLast</lastName><openId>https://www.appdirect.com/openid/id/ec5d8eda-5cec-444d-9e30-125b6e4b67e2</openId><uuid>ec5d8eda-5cec-444d-9e30-125b6e4b67e2</uuid></creator><payload><account><accountIdentifier>dummy-account</accountIdentifier><status>ACTIVE</status></account><configuration/><user><attributes><entry><key>favoriteColor</key><value>green</value></entry><entry><key>hourlyRate</key><value>40</value></entry></attributes><email>test-email@appdirect.com</email><firstName>DummyFirst</firstName><language>fr</language><lastName>DummyLast</lastName><openId>https://www.appdirect.com/openid/id/ec5d8eda-5cec-444d-9e30-125b6e4b67e2</openId><uuid>ec5d8eda-5cec-444d-9e30-125b6e4b67e2</uuid></user></payload></event>
+        val e = Event.from(t)
         actions(e.typ)(e, resp.xml).map(r => {
           Logger.info(s"sending back: ${r.toXml.toString()}")
           Ok(r.toXml)})
@@ -103,6 +104,7 @@ class SubscriptionCtrl extends Controller {
         FailureResponse(e.getMessage, e.err)
       case e: Exception =>
         e.printStackTrace()
+        println(s"culprit event: $e")
         FailureResponse(e.getMessage, ErrorCode.UNKNOWN_ERROR)
     }
 

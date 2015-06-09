@@ -72,8 +72,11 @@ class EventDao {
 
   private def insertUnique(sql: String, inputs: List[Any]): Unit = {
     try{
-      insert(sql, inputs, DONT_GENERATE_RETURNED_ID)}catch {
-      case e: Exception => throw new DbException(s"Database Error saving company info", ErrorCode.UNKNOWN_ERROR)
+      insert(sql, inputs, DONT_GENERATE_RETURNED_ID)
+    }catch {
+      case e: Exception =>
+        e.printStackTrace()
+        throw new DbException(s"Database Error saving company info", ErrorCode.UNKNOWN_ERROR)
     }
   }
 
@@ -189,22 +192,26 @@ class EventDao {
 
   def assignUser(event: Event, xml: NodeSeq): Unit = {
     auditEvent(xml)
-    val sql = "INSERT INTO USER VALUES(?,?,?,?)"
-    for{
+    val sql = "INSERT INTO USER VALUES(?,?,?,?,?,?)"
+    (for{
       payload <-event.payload
       user <- payload.user
       email <- user.email
       first <- user.firstName
       last <- user.lastName
       openID <- user.openId
+      language <- user.language
     }yield{
       try{
         require(!checkIfUserExists(user).contains(true), throw new DbException("User already exists", ErrorCode.USER_ALREADY_EXISTS))
-        insertUnique(sql, List(openID, first, last, email.address))
+        insertUnique(sql, List(openID, first, last, email.address, language.toString, user.uuid.orNull))
       }catch{
         case e: DbException => throw e
         case e: Exception => throw new DbException(s"Failed to add user", ErrorCode.UNKNOWN_ERROR)
       }
+    }).orElse{
+      println(s"event didnt have everything $event")
+      Option(())
     }
   }
 
