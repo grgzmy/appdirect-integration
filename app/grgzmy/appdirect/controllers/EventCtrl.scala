@@ -14,7 +14,7 @@ import scala.xml.NodeSeq
 
 class EventCtrl extends Controller {
 
-  val eventDao: EventDao = new EventDao
+  val eventDao = EventDao
 
   def event(fetchUrl: String) = Action.async{
     implicit request =>
