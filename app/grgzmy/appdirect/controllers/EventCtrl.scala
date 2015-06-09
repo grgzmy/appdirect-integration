@@ -19,10 +19,9 @@ class EventCtrl extends Controller {
   def event(fetchUrl: String) = Action.async{
     implicit request =>
       Logger.info(s"received order request from AppDirect: ${request.toString()}")
-      fetchEvent("https://www.appdirect.com/api/integration/v1/events/dummyAssign").flatMap(resp =>
+      fetchEvent(fetchUrl).flatMap(resp =>
       {
-        val t = <event xmlns:atom="http://www.w3.org/2005/Atom"><type>USER_ASSIGNMENT</type><marketplace><baseUrl>https://acme.appdirect.com</baseUrl><partner>ACME</partner></marketplace><flag>STATELESS</flag><creator><email>test-email+creator@appdirect.com</email><firstName>DummyCreatorFirst</firstName><language>fr</language><lastName>DummyCreatorLast</lastName><openId>https://www.appdirect.com/openid/id/ec5d8eda-5cec-444d-9e30-125b6e4b67e2</openId><uuid>ec5d8eda-5cec-444d-9e30-125b6e4b67e2</uuid></creator><payload><account><accountIdentifier>dummy-account</accountIdentifier><status>ACTIVE</status></account><configuration/><user><attributes><entry><key>favoriteColor</key><value>green</value></entry><entry><key>hourlyRate</key><value>40</value></entry></attributes><email>test-email@appdirect.com</email><firstName>DummyFirst</firstName><language>fr</language><lastName>DummyLast</lastName><openId>https://www.appdirect.com/openid/id/ec5d8eda-5cec-444d-9e30-125b6e4b67e2</openId><uuid>ec5d8eda-5cec-444d-9e30-125b6e4b67e2</uuid></user></payload></event>
-        val e = Event.from(t)
+        val e = Event.from(resp.xml)
         actions(e.typ)(e, resp.xml).map(r => {
           Logger.info(s"sending back: ${r.toXml.toString()}")
           Ok(r.toXml)})
@@ -123,7 +122,7 @@ class EventCtrl extends Controller {
     }
   }
 
-  private def unkownEvent(event: Event, xml: NodeSeq): Future[Response] = Future.successful(FailureResponse("Unknown Event", ErrorCode.INVALID_RESPONSE))
+  private def unknownEvent(event: Event, xml: NodeSeq): Future[Response] = Future.successful(FailureResponse("Unknown Event", ErrorCode.INVALID_RESPONSE))
 
   private val actions: Map[EventType.Value, (Event, NodeSeq)=>Future[Response]] = Map(
     EventType.SUBSCRIPTION_ORDER -> order,
@@ -132,7 +131,7 @@ class EventCtrl extends Controller {
     EventType.SUBSCRIPTION_CANCEL -> cancel,
     EventType.USER_ASSIGNMENT -> userAssignment,
     EventType.USER_UNASSIGNMENT -> userUnassignment,
-    EventType.UNKNOWN ->  unkownEvent
+    EventType.UNKNOWN ->  unknownEvent
   )
 
 }
